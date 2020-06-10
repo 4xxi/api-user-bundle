@@ -1,0 +1,19 @@
+services:
+    Fourxxi\ApiUserBundle\:
+        resource: '../../*'
+        exclude: '../../{DependencyInjection,Entity,Migrations,Tests}'
+
+    api_user.provider.credentials.plain: '@Fourxxi\ApiUserBundle\Provider\Security\Guard\PlainCredentialsProvider'
+    api_user.provider.credentials.bearer: '@Fourxxi\ApiUserBundle\Provider\Security\Guard\BearerCredentialsProvider'
+    api_user.provider.user:
+        class: Fourxxi\ApiUserBundle\Repository\TokenRepository
+        autowire: true
+
+    api_user.api_authenticator:
+        public: true
+        class: Fourxxi\ApiUserBundle\Security\Guard\ApiAuthenticator
+        arguments:
+            $tokenName: "x-api-token"
+            $checkQueryString: false
+            $credentialsProvider: '@api_user.provider.credentials.plain'
+            $userProvider: '@api_user.provider.user'
