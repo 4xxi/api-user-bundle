@@ -14,6 +14,7 @@ services:
         class: Fourxxi\ApiUserBundle\Security\Guard\ApiAuthenticator
         arguments:
             $tokenName: "x-api-token"
-            $checkQueryString: false
+            $checkQueryString: true
             $credentialsProvider: '@api_user.provider.credentials.plain'
             $userProvider: '@api_user.provider.user'
+            $eventDispatcher: '@event_dispatcher'

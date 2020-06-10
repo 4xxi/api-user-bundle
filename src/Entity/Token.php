@@ -26,7 +26,6 @@ class Token implements TokenInterface
 
     /**
      * @var string
-     * @ORM\Column
      */
     private $credentials;
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Security\Guard;
 
+use Fourxxi\ApiUserBundle\Event\Security\Guard\ApiAuthenticationRequestFailedEvent;
+use Fourxxi\ApiUserBundle\Event\Security\Guard\ApiAuthenticationUnavailableEvent;
 use Fourxxi\ApiUserBundle\Provider\ApiUserProviderInterface;
 use Fourxxi\ApiUserBundle\Provider\Security\Guard\CredentialsProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,6 +16,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class ApiAuthenticator extends AbstractGuardAuthenticator
 {
@@ -37,16 +40,23 @@ final class ApiAuthenticator extends AbstractGuardAuthenticator
      */
     private $userProvider;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function __construct(
         string $tokenName,
         bool $checkQueryString,
         CredentialsProviderInterface $credentialsProvider,
-        ApiUserProviderInterface $userProvider
+        ApiUserProviderInterface $userProvider,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->tokenName = $tokenName;
         $this->checkQueryString = $checkQueryString;
         $this->credentialsProvider = $credentialsProvider;
         $this->userProvider = $userProvider;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function supports(Request $request)
@@ -78,12 +88,12 @@ final class ApiAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        $data = [
-            // you might translate this message
-            'message' => 'Authentication Failed'
-        ];
+        $response = new JsonResponse(['message' => 'Authentication failed'], Response::HTTP_UNAUTHORIZED);
+        $event = new ApiAuthenticationRequestFailedEvent($request, $exception, $response);
 
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getResponse();
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
@@ -98,12 +108,12 @@ final class ApiAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        $data = [
-            // you might translate this message
-            'message' => 'Authentication Required'
-        ];
+        $response = new JsonResponse(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
+        $event = new ApiAuthenticationUnavailableEvent($request, $authException, $response);
 
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getResponse();
     }
 
     private function getTokenFromRequest(Request $request): ?string
