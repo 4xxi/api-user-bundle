@@ -19,6 +19,6 @@ final class BearerCredentialsProvider implements CredentialsProviderInterface
 
     public function isValid(string $rawCredentials): bool
     {
-        return preg_match(self::PATTERN, $rawCredentials);
+        return (bool) preg_match(self::PATTERN, $rawCredentials);
     }
 }

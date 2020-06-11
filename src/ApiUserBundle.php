@@ -18,7 +18,6 @@ class ApiUserBundle extends Bundle
 
         $container->addCompilerPass(new DoctrineResolveUserEntityPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 1);
         $this->registerDoctrinePass($container);
-
     }
 
     private function registerDoctrinePass(ContainerBuilder $container): void

@@ -12,8 +12,16 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('api_user');
-        $root = $treeBuilder->getRootNode();
 
+        $this->buildGeneralConfiguration($treeBuilder);
+        $this->buildApiGuardConfiguration($treeBuilder);
+
+        return $treeBuilder;
+    }
+
+    private function buildGeneralConfiguration(TreeBuilder $builder): void
+    {
+        $root = $builder->getRootNode();
         $root
             ->children()
                 ->scalarNode('user_class')
@@ -23,10 +31,27 @@ final class Configuration implements ConfigurationInterface
                         ->thenInvalid('Provided user class "%s" does not exist.')
                     ->end()
                 ->end()
-                ->booleanNode('use_bundled_token')->defaultTrue()->end()
+                ->booleanNode('use_bundled_token')
+                    ->defaultTrue()
+                ->end()
             ->end()
         ;
+    }
 
-        return $treeBuilder;
+    private function buildApiGuardConfiguration(TreeBuilder $builder): void
+    {
+        $root = $builder->getRootNode();
+        $root
+            ->children()
+                ->arrayNode('api_guard')
+                    ->children()
+                        ->scalarNode('header')->defaultValue('X-API-TOKEN')->end()
+                        ->booleanNode('check_query_string')->defaultFalse()->end()
+                        ->scalarNode('credentials_provider')->defaultNull()->end()
+                        ->scalarNode('user_provider')->defaultNull()->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 }
