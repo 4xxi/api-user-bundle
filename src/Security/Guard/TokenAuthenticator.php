@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Security\Guard;
 
-use Fourxxi\ApiUserBundle\Event\Security\Guard\ApiAuthenticationRequestFailedEvent;
-use Fourxxi\ApiUserBundle\Event\Security\Guard\ApiAuthenticationUnavailableEvent;
+use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationRequestFailedEvent;
+use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationUnavailableEvent;
 use Fourxxi\ApiUserBundle\Provider\ApiUserProviderInterface;
 use Fourxxi\ApiUserBundle\Provider\Security\Guard\CredentialsProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-final class ApiAuthenticator extends AbstractGuardAuthenticator
+final class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     /**
      * @var string
@@ -89,7 +89,7 @@ final class ApiAuthenticator extends AbstractGuardAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $response = new JsonResponse(['message' => 'Authentication failed'], Response::HTTP_UNAUTHORIZED);
-        $event = new ApiAuthenticationRequestFailedEvent($request, $exception, $response);
+        $event = new TokenAuthenticationRequestFailedEvent($request, $exception, $response);
 
         $this->eventDispatcher->dispatch($event);
 
@@ -98,7 +98,7 @@ final class ApiAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        return null;
+        return new JsonResponse('success');
     }
 
     public function supportsRememberMe()
@@ -109,7 +109,7 @@ final class ApiAuthenticator extends AbstractGuardAuthenticator
     public function start(Request $request, AuthenticationException $authException = null)
     {
         $response = new JsonResponse(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
-        $event = new ApiAuthenticationUnavailableEvent($request, $authException, $response);
+        $event = new TokenAuthenticationUnavailableEvent($request, $authException, $response);
 
         $this->eventDispatcher->dispatch($event);
 

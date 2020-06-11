@@ -16,10 +16,19 @@ services:
     api_user.provider.user:
         alias: 'api_user.provider.token_repository_user'
 
-    api_user.api_authenticator:
+    api_user.token_authenticator:
         public: true
-        class: Fourxxi\ApiUserBundle\Security\Guard\ApiAuthenticator
+        class: Fourxxi\ApiUserBundle\Security\Guard\TokenAuthenticator
         arguments:
             $credentialsProvider: '@api_user.provider.credentials'
             $userProvider: '@api_user.provider.user'
             $eventDispatcher: '@event_dispatcher'
+
+    api_user.json_login_authenticator:
+        public: true
+        class: Fourxxi\ApiUserBundle\Security\Guard\JsonLoginAuthenticator
+
+    api_user.router:
+        class: Fourxxi\ApiUserBundle\Routing\ApiUserLoader
+        tags:
+            - 'routing.loader'

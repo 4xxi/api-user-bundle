@@ -20,7 +20,8 @@ final class ApiUserExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $this->loadGeneralConfiguration($config, $container);
-        $this->loadApiGuardConfiguration($config, $container);
+        $this->loadTokenAuthConfiguration($config, $container);
+        $this->loadLoginConfiguration($config, $container);
     }
 
     private function loadGeneralConfiguration(array $config, ContainerBuilder $container): void
@@ -32,19 +33,26 @@ final class ApiUserExtension extends Extension
         }
     }
 
-    private function loadApiGuardConfiguration(array $config, ContainerBuilder $container): void
+    private function loadTokenAuthConfiguration(array $config, ContainerBuilder $container): void
     {
-        $guard = $container->getDefinition('api_user.api_authenticator');
+        $guard = $container->getDefinition('api_user.token_authenticator');
 
-        $guard->setArgument(0, $config['api_guard']['header']);
-        $guard->setArgument(1, $config['api_guard']['check_query_string']);
+        $guard->setArgument(0, $config['token_auth']['header']);
+        $guard->setArgument(1, $config['token_auth']['check_query_string']);
 
-        if (null !== $config['api_guard']['credentials_provider']) {
-            $container->setAlias('api_user.provider.credentials', $config['api_guard']['credentials_provider']);
+        // TODO: validate service interfaces
+        if (null !== $config['token_auth']['credentials_provider']) {
+            $container->setAlias('api_user.provider.credentials', $config['token_auth']['credentials_provider']);
         }
 
-        if (null !== $config['api_guard']['user_provider']) {
-            $container->setAlias('api_user.provider.user', $config['api_guard']['user_provider']);
+        if (null !== $config['token_auth']['user_provider']) {
+            $container->setAlias('api_user.provider.user', $config['token_auth']['user_provider']);
         }
+    }
+
+    private function loadLoginConfiguration(array $config, ContainerBuilder $container): void
+    {
+        $loader = $container->getDefinition('api_user.router');
+        $loader->setArgument(0, $config['login']['route']);
     }
 }

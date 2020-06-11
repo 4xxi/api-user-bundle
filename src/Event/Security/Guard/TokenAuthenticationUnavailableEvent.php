@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Contracts\EventDispatcher\Event;
 
-final class ApiAuthenticationRequestFailedEvent extends Event
+final class TokenAuthenticationUnavailableEvent extends Event
 {
     /**
      * @var Request
@@ -17,7 +17,7 @@ final class ApiAuthenticationRequestFailedEvent extends Event
     private $request;
 
     /**
-     * @var AuthenticationException
+     * @var AuthenticationException|null
      */
     private $exception;
 
@@ -26,7 +26,7 @@ final class ApiAuthenticationRequestFailedEvent extends Event
      */
     private $response;
 
-    public function __construct(Request $request, AuthenticationException $exception, Response $response = null)
+    public function __construct(Request $request, ?AuthenticationException $exception = null, Response $response = null)
     {
         $this->request = $request;
         $this->exception = $exception;
@@ -38,7 +38,7 @@ final class ApiAuthenticationRequestFailedEvent extends Event
         return $this->request;
     }
 
-    public function getException(): AuthenticationException
+    public function getException(): ?AuthenticationException
     {
         return $this->exception;
     }
