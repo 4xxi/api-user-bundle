@@ -7,17 +7,18 @@ namespace Fourxxi\ApiUserBundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Fourxxi\ApiUserBundle\Entity\Token;
-use Fourxxi\ApiUserBundle\Provider\ApiUserProviderInterface;
+use Fourxxi\ApiUserBundle\Entity\TokenInterface;
+use Fourxxi\ApiUserBundle\Provider\ApiTokenProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class TokenRepository extends ServiceEntityRepository implements ApiUserProviderInterface
+class TokenRepository extends ServiceEntityRepository implements ApiTokenProviderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Token::class);
     }
 
-    public function findUserByTokenCredentials(string $credentials): ?UserInterface
+    public function findTokenByCredentials(string $credentials): ?TokenInterface
     {
         $qb = $this->createQueryBuilder('token');
         $qb
@@ -28,12 +29,12 @@ class TokenRepository extends ServiceEntityRepository implements ApiUserProvider
             ->setMaxResults(1)
         ;
 
-        /** @var Token $result */
+        /** @var TokenInterface $result */
         $result = $qb->getQuery()->getOneOrNullResult();
         if (null === $result) {
             return null;
         }
 
-        return $result->getUser();
+        return $result;
     }
 }

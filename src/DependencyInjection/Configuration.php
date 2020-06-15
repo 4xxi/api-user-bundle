@@ -49,7 +49,7 @@ final class Configuration implements ConfigurationInterface
                         ->scalarNode('header')->defaultValue('X-API-TOKEN')->end()
                         ->booleanNode('check_query_string')->defaultFalse()->end()
                         ->scalarNode('credentials_provider')->defaultNull()->end()
-                        ->scalarNode('user_provider')->defaultNull()->end()
+                        ->scalarNode('token_provider')->defaultNull()->end()
                     ->end()
                 ->end()
             ->end()

@@ -45,8 +45,8 @@ final class ApiUserExtension extends Extension
             $container->setAlias('api_user.provider.credentials', $config['token_auth']['credentials_provider']);
         }
 
-        if (null !== $config['token_auth']['user_provider']) {
-            $container->setAlias('api_user.provider.user', $config['token_auth']['user_provider']);
+        if (null !== $config['token_auth']['token_provider']) {
+            $container->setAlias('api_user.provider.user', $config['token_auth']['token_provider']);
         }
     }
 

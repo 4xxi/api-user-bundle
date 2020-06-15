@@ -6,7 +6,7 @@ namespace Fourxxi\ApiUserBundle\Security\Guard;
 
 use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationRequestFailedEvent;
 use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationUnavailableEvent;
-use Fourxxi\ApiUserBundle\Provider\ApiUserProviderInterface;
+use Fourxxi\ApiUserBundle\Provider\ApiTokenProviderInterface;
 use Fourxxi\ApiUserBundle\Provider\Security\Guard\CredentialsProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,9 +36,9 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     private $credentialsProvider;
 
     /**
-     * @var ApiUserProviderInterface
+     * @var ApiTokenProviderInterface
      */
-    private $userProvider;
+    private $tokenProvider;
 
     /**
      * @var EventDispatcherInterface
@@ -49,13 +49,13 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
         string $tokenName,
         bool $checkQueryString,
         CredentialsProviderInterface $credentialsProvider,
-        ApiUserProviderInterface $userProvider,
+        ApiTokenProviderInterface $tokenProvider,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->tokenName = $tokenName;
         $this->checkQueryString = $checkQueryString;
         $this->credentialsProvider = $credentialsProvider;
-        $this->userProvider = $userProvider;
+        $this->tokenProvider = $tokenProvider;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -78,7 +78,12 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        return $this->userProvider->findUserByTokenCredentials($credentials);
+        $token = $this->tokenProvider->findTokenByCredentials($credentials);
+        if (null === $token) {
+            return null;
+        }
+
+        return $token->getUser();
     }
 
     public function checkCredentials($credentials, UserInterface $user)
@@ -98,7 +103,7 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        return new JsonResponse('success');
+        return null;
     }
 
     public function supportsRememberMe()
