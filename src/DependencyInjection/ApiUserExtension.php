@@ -13,7 +13,7 @@ final class ApiUserExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
 
         $configuration = $this->getConfiguration($configs, $container);
@@ -63,6 +63,5 @@ final class ApiUserExtension extends Extension
     {
         $loader = $container->getDefinition('api_user.router');
         $loader->setArgument(0, $config['login']['route']);
-
     }
 }

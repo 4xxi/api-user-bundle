@@ -23,7 +23,7 @@ class ApiUserBundle extends Bundle
     private function registerDoctrinePass(ContainerBuilder $container): void
     {
         $mappings = [
-            realpath(__DIR__ . '/Resources/config/doctrine-mappings') => 'Fourxxi\ApiUserBundle\Entity',
+            realpath(__DIR__.'/Resources/config/doctrine-mappings') => 'Fourxxi\ApiUserBundle\Entity',
         ];
 
         $mappingPass = DoctrineOrmMappingsPass::createYamlMappingDriver(

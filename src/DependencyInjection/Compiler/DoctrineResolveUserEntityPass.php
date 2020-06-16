@@ -17,7 +17,7 @@ final class DoctrineResolveUserEntityPass implements CompilerPassInterface
         $definition->addMethodCall('addResolveTargetEntity', [
             UserInterface::class,
             $container->getParameter('api_user.user_class'),
-            []
+            [],
         ]);
 
         $definition->addTag('doctrine.event_subscriber', ['connection' => 'default']);

@@ -6,8 +6,8 @@ namespace Fourxxi\ApiUserBundle\Security\Guard;
 
 use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationFailedEvent;
 use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationUnavailableEvent;
-use Fourxxi\ApiUserBundle\Provider\TokenProviderInterface;
 use Fourxxi\ApiUserBundle\Provider\Security\Guard\CredentialsProviderInterface;
+use Fourxxi\ApiUserBundle\Provider\TokenProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,6 +62,7 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     public function supports(Request $request)
     {
         $token = $this->getTokenFromRequest($request);
+
         return null !== $token && !empty($token) && $this->credentialsProvider->isValid($token);
     }
 

@@ -51,7 +51,6 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
         $validRequest = $request->isMethod(Request::METHOD_POST)
             && 'application/json' === $request->headers->get('Content-Type')
             && !empty($request->getContent());
-        ;
 
         $validJson = (bool) json_decode($request->getContent(), true);
 
@@ -95,7 +94,7 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
         $response = new JsonResponse([
             'credentials' => $token->getCredentials(),
             'expiresAt' => $token->getExpiresAt()->format(DATE_ATOM),
-            'createdAt' => $token->getCreatedAt()->format(DATE_ATOM)
+            'createdAt' => $token->getCreatedAt()->format(DATE_ATOM),
         ]);
 
         $event = new LoginAuthenticationSuccessEvent($request, $token, $response);
