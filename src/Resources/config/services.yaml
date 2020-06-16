@@ -8,10 +8,16 @@ services:
     api_user.provider.credentials:
         alias: 'api_user.provider.credentials_plain'
 
+    api_user.base_token_credentials_generator: '@Fourxxi\ApiUserBundle\Service\TokenGenerator'
+    api_user.token_credentials_generator:
+        alias: 'api_user.base_token_credentials_generator'
+
     api_user.provider.token_repository:
         class: Fourxxi\ApiUserBundle\Repository\TokenRepository
         arguments:
             $registry: '@doctrine'
+            $tokenLifetime: '%api_user.token_lifetime%'
+            $credentialsGenerator: '@api_user.token_credentials_generator'
 
     api_user.provider.token:
         alias: 'api_user.provider.token_repository'
@@ -28,7 +34,9 @@ services:
         public: true
         class: Fourxxi\ApiUserBundle\Security\Guard\JsonLoginAuthenticator
         arguments:
+            $tokenProvider: '@api_user.provider.token'
             $passwordEncoder: '@security.password_encoder'
+            $eventDispatcher: '@event_dispatcher'
 
     api_user.router:
         class: Fourxxi\ApiUserBundle\Routing\ApiUserLoader

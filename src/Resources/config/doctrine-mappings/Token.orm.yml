@@ -13,6 +13,8 @@ Fourxxi\ApiUserBundle\Entity\Token:
   fields:
     expiresAt:
       type: datetime_immutable
+    createdAt:
+      type: datetime_immutable
     credentials:
       type: string
   manyToOne:

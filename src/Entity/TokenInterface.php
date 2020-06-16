@@ -14,4 +14,6 @@ interface TokenInterface
     public function getExpiresAt(): \DateTimeImmutable;
 
     public function getCredentials(): string;
+
+    public function getCreatedAt(): \DateTimeImmutable;
 }

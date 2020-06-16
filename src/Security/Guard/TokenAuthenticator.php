@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Security\Guard;
 
-use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationRequestFailedEvent;
+use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationFailedEvent;
 use Fourxxi\ApiUserBundle\Event\Security\Guard\TokenAuthenticationUnavailableEvent;
-use Fourxxi\ApiUserBundle\Provider\ApiTokenProviderInterface;
+use Fourxxi\ApiUserBundle\Provider\TokenProviderInterface;
 use Fourxxi\ApiUserBundle\Provider\Security\Guard\CredentialsProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,7 +36,7 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     private $credentialsProvider;
 
     /**
-     * @var ApiTokenProviderInterface
+     * @var TokenProviderInterface
      */
     private $tokenProvider;
 
@@ -49,7 +49,7 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
         string $tokenName,
         bool $checkQueryString,
         CredentialsProviderInterface $credentialsProvider,
-        ApiTokenProviderInterface $tokenProvider,
+        TokenProviderInterface $tokenProvider,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->tokenName = $tokenName;
@@ -94,7 +94,7 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $response = new JsonResponse(['message' => 'Authentication failed'], Response::HTTP_UNAUTHORIZED);
-        $event = new TokenAuthenticationRequestFailedEvent($request, $exception, $response);
+        $event = new TokenAuthenticationFailedEvent($request, $exception, $response);
 
         $this->eventDispatcher->dispatch($event);
 

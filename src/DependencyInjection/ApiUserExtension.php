@@ -20,6 +20,7 @@ final class ApiUserExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $this->loadGeneralConfiguration($config, $container);
+        $this->loadTokenConfiguration($config, $container);
         $this->loadTokenAuthConfiguration($config, $container);
         $this->loadLoginConfiguration($config, $container);
     }
@@ -27,9 +28,17 @@ final class ApiUserExtension extends Extension
     private function loadGeneralConfiguration(array $config, ContainerBuilder $container): void
     {
         $container->setParameter('api_user.user_class', $config['user_class']);
+    }
 
-        if ($config['use_bundled_token']) {
+    private function loadTokenConfiguration(array $config, ContainerBuilder $container): void
+    {
+        if ($config['token']['use_bundled']) {
             $container->setParameter('api_user.use_bundled_token', true);
+        }
+
+        $container->setParameter('api_user.token_lifetime', $config['token']['lifetime']);
+        if (null !== $config['token']['credentials_generator']) {
+            $container->setAlias('api_user.token_credentials_generator', $config['token']['credentials_generator']);
         }
     }
 
@@ -54,5 +63,6 @@ final class ApiUserExtension extends Extension
     {
         $loader = $container->getDefinition('api_user.router');
         $loader->setArgument(0, $config['login']['route']);
+
     }
 }

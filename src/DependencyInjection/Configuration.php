@@ -14,6 +14,7 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('api_user');
 
         $this->buildGeneralConfiguration($treeBuilder);
+        $this->buildTokenConfiguration($treeBuilder);
         $this->buildTokenGuardConfiguration($treeBuilder);
         $this->buildLoginGuardConfiguration($treeBuilder);
 
@@ -31,9 +32,6 @@ final class Configuration implements ConfigurationInterface
                         ->ifTrue(function ($class) { return !class_exists($class); })
                         ->thenInvalid('Provided user class "%s" does not exist.')
                     ->end()
-                ->end()
-                ->booleanNode('use_bundled_token')
-                    ->defaultTrue()
                 ->end()
             ->end()
         ;
@@ -64,6 +62,22 @@ final class Configuration implements ConfigurationInterface
                 ->arrayNode('login')
                     ->children()
                         ->scalarNode('route')->defaultValue('/api/login')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    private function buildTokenConfiguration(TreeBuilder $builder): void
+    {
+        $root = $builder->getRootNode();
+        $root
+            ->children()
+                ->arrayNode('token')
+                    ->children()
+                        ->booleanNode('use_bundled')->defaultTrue()->end()
+                        ->integerNode('lifetime')->defaultValue(86400)->end()
+                        ->scalarNode('credentials_generator')->defaultNull()->end()
                     ->end()
                 ->end()
             ->end()

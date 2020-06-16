@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Contracts\EventDispatcher\Event;
 
-final class TokenAuthenticationRequestFailedEvent extends Event
+final class TokenAuthenticationFailedEvent extends Event
 {
     /**
      * @var Request

@@ -22,6 +22,11 @@ class Token implements TokenInterface
     /**
      * @var \DateTimeImmutable
      */
+    private $createdAt;
+
+    /**
+     * @var \DateTimeImmutable
+     */
     private $expiresAt;
 
     /**
@@ -34,6 +39,7 @@ class Token implements TokenInterface
         $this->user = $user;
         $this->expiresAt = $expiresAt;
         $this->credentials = $credentials;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): int
@@ -54,5 +60,10 @@ class Token implements TokenInterface
     public function getCredentials(): string
     {
         return $this->credentials;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }

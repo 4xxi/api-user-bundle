@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Security\Guard;
 
+use Fourxxi\ApiUserBundle\Event\Security\Guard\LoginAuthenticationFailedEvent;
+use Fourxxi\ApiUserBundle\Event\Security\Guard\LoginAuthenticationSuccessEvent;
+use Fourxxi\ApiUserBundle\Event\Security\Guard\LoginAuthenticationUnavailableEvent;
+use Fourxxi\ApiUserBundle\Provider\TokenProviderInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,14 +22,28 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
 {
     /**
+     * @var TokenProviderInterface
+     */
+    private $tokenProvider;
+
+    /**
      * @var UserPasswordEncoderInterface
      */
     private $passwordEncoder;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function __construct(
-        UserPasswordEncoderInterface $passwordEncoder
+        TokenProviderInterface $tokenProvider,
+        UserPasswordEncoderInterface $passwordEncoder,
+        EventDispatcherInterface $eventDispatcher
     ) {
+        $this->tokenProvider = $tokenProvider;
         $this->passwordEncoder = $passwordEncoder;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function supports(Request $request)
@@ -62,23 +81,28 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $response = new JsonResponse(['message' => 'Invalid username/password'], Response::HTTP_UNAUTHORIZED);
-//        $event = new ApiAuthenticationRequestFailedEvent($request, $exception, $response);
-//
-//        $this->eventDispatcher->dispatch($event);
-//
-//        return $event->getResponse();
-        return $response;
+        $event = new LoginAuthenticationFailedEvent($request, $exception, $response);
+
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getResponse();
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $response = new JsonResponse(['message' => 'Success']);
-//        $event = new ApiAuthenticationRequestFailedEvent($request, $exception, $response);
-//
-//        $this->eventDispatcher->dispatch($event);
-//
-//        return $event->getResponse();
-        return $response;
+        $token = $this->tokenProvider->createTokenForUser($token->getUser());
+
+        $response = new JsonResponse([
+            'credentials' => $token->getCredentials(),
+            'expiresAt' => $token->getExpiresAt()->format(DATE_ATOM),
+            'createdAt' => $token->getCreatedAt()->format(DATE_ATOM)
+        ]);
+
+        $event = new LoginAuthenticationSuccessEvent($request, $token, $response);
+
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getResponse();
     }
 
     public function supportsRememberMe()
@@ -88,13 +112,11 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
-//        $response = new JsonResponse(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
-//        $event = new ApiAuthenticationUnavailableEvent($request, $authException, $response);
-//
-//        $this->eventDispatcher->dispatch($event);
-//
-//        return $event->getResponse();
+        $response = new JsonResponse(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
+        $event = new LoginAuthenticationUnavailableEvent($request, $authException, $response);
 
-        return new JsonResponse(['invalid login data'], Response::HTTP_BAD_REQUEST);
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getResponse();
     }
 }
