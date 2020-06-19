@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Routing;
 
+use Fourxxi\ApiUserBundle\Controller\RegistrationController;
 use Symfony\Component\Config\Loader\Loader;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -20,10 +22,16 @@ final class ApiUserLoader extends Loader
      */
     private $loginRoute;
 
-    public function __construct(string $loginRoute)
+    /**
+     * @var string
+     */
+    private $registrationRoute;
+
+    public function __construct(string $loginRoute, string $registrationRoute)
     {
         $this->loaded = false;
         $this->loginRoute = $loginRoute;
+        $this->registrationRoute = $registrationRoute;
     }
 
     public function load($resource, $type = null): RouteCollection
@@ -34,6 +42,9 @@ final class ApiUserLoader extends Loader
 
         $routes = new RouteCollection();
         $routes->add('api_user_login', new Route($this->loginRoute));
+        $routes->add('api_user_registration', new Route($this->registrationRoute, [
+            '_controller' => RegistrationController::class.'::register',
+        ], [], [], null, [], Request::METHOD_POST));
 
         return $routes;
     }

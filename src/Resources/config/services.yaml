@@ -42,3 +42,20 @@ services:
         class: Fourxxi\ApiUserBundle\Routing\ApiUserLoader
         tags:
             - 'routing.loader'
+
+    api_user.registration.form_type:
+        alias: 'Fourxxi\ApiUserBundle\Form\Type\UserRegistrationType'
+
+    Fourxxi\ApiUserBundle\Controller\RegistrationController:
+        arguments:
+            $registrationFormType: '@api_user.registration.form_type'
+            $userClass: '%api_user.user_class%'
+            $eventDispatcher: '@event_dispatcher'
+        tags: ['controller.service_arguments']
+
+    Fourxxi\ApiUserBundle\EventSubscriber\EncodeUserPasswordSubscriber:
+        arguments:
+            $passwordEncoder: '@security.password_encoder'
+        tags: ['kernel.event_subscriber']
+
+

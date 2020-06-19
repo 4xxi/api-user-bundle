@@ -16,7 +16,8 @@ final class Configuration implements ConfigurationInterface
         $this->buildGeneralConfiguration($treeBuilder);
         $this->buildTokenConfiguration($treeBuilder);
         $this->buildTokenGuardConfiguration($treeBuilder);
-        $this->buildLoginGuardConfiguration($treeBuilder);
+        $this->buildLoginConfiguration($treeBuilder);
+        $this->buildRegistrationConfiguration($treeBuilder);
 
         return $treeBuilder;
     }
@@ -31,6 +32,22 @@ final class Configuration implements ConfigurationInterface
                     ->validate()
                         ->ifTrue(function ($class) { return !class_exists($class); })
                         ->thenInvalid('Provided user class "%s" does not exist.')
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    private function buildTokenConfiguration(TreeBuilder $builder): void
+    {
+        $root = $builder->getRootNode();
+        $root
+            ->children()
+                ->arrayNode('token')
+                    ->children()
+                        ->booleanNode('use_bundled')->defaultTrue()->end()
+                        ->integerNode('lifetime')->defaultValue(86400)->end()
+                        ->scalarNode('credentials_generator')->defaultNull()->end()
                     ->end()
                 ->end()
             ->end()
@@ -54,7 +71,7 @@ final class Configuration implements ConfigurationInterface
         ;
     }
 
-    private function buildLoginGuardConfiguration(TreeBuilder $builder): void
+    private function buildLoginConfiguration(TreeBuilder $builder): void
     {
         $root = $builder->getRootNode();
         $root
@@ -68,16 +85,15 @@ final class Configuration implements ConfigurationInterface
         ;
     }
 
-    private function buildTokenConfiguration(TreeBuilder $builder): void
+    private function buildRegistrationConfiguration(TreeBuilder $builder): void
     {
         $root = $builder->getRootNode();
         $root
             ->children()
-                ->arrayNode('token')
+                ->arrayNode('registration')
                     ->children()
-                        ->booleanNode('use_bundled')->defaultTrue()->end()
-                        ->integerNode('lifetime')->defaultValue(86400)->end()
-                        ->scalarNode('credentials_generator')->defaultNull()->end()
+                        ->scalarNode('route')->defaultValue('/api/register')->end()
+                        ->scalarNode('form_type')->defaultNull()->end()
                     ->end()
                 ->end()
             ->end()

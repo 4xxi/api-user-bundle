@@ -23,6 +23,7 @@ final class ApiUserExtension extends Extension
         $this->loadTokenConfiguration($config, $container);
         $this->loadTokenAuthConfiguration($config, $container);
         $this->loadLoginConfiguration($config, $container);
+        $this->loadRegistrationConfiguration($config, $container);
     }
 
     private function loadGeneralConfiguration(array $config, ContainerBuilder $container): void
@@ -63,5 +64,15 @@ final class ApiUserExtension extends Extension
     {
         $loader = $container->getDefinition('api_user.router');
         $loader->setArgument(0, $config['login']['route']);
+    }
+
+    private function loadRegistrationConfiguration(array $config, ContainerBuilder $container): void
+    {
+        $loader = $container->getDefinition('api_user.router');
+        $loader->setArgument(1, $config['registration']['route']);
+
+        if (null !== $config['registration']['form_type']) {
+            $container->setAlias('api_user.registration.form_type', $config['registration']['form_type']);
+        }
     }
 }
