@@ -11,6 +11,8 @@ services:
     api_user.base_token_credentials_generator: '@Fourxxi\ApiUserBundle\Service\TokenGenerator'
     api_user.token_credentials_generator:
         alias: 'api_user.base_token_credentials_generator'
+    api_user.confirmation_token_credentials_generator:
+        alias: 'api_user.base_token_credentials_generator'
 
     api_user.provider.token_repository:
         class: Fourxxi\ApiUserBundle\Repository\TokenRepository
@@ -19,8 +21,17 @@ services:
             $tokenLifetime: '%api_user.token_lifetime%'
             $credentialsGenerator: '@api_user.token_credentials_generator'
 
+    api_user.provider.confirmation_token_repository:
+        class: Fourxxi\ApiUserBundle\Repository\ConfirmationTokenRepository
+        arguments:
+            $registry: '@doctrine'
+            $credentialsGenerator: '@api_user.confirmation_token_credentials_generator'
+
     api_user.provider.token:
         alias: 'api_user.provider.token_repository'
+
+    api_user.provider.confirmation_token:
+        alias: 'api_user.provider.confirmation_token_repository'
 
     api_user.token_authenticator:
         public: true

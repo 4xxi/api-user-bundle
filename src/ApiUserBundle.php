@@ -17,19 +17,35 @@ class ApiUserBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new DoctrineResolveUserEntityPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 1);
-        $this->registerDoctrinePass($container);
+        $this->registerDoctrineTokenPass($container);
+        $this->registerDoctrineConfirmationTokenPass($container);
     }
 
-    private function registerDoctrinePass(ContainerBuilder $container): void
+    private function registerDoctrineTokenPass(ContainerBuilder $container): void
     {
         $mappings = [
-            realpath(__DIR__.'/Resources/config/doctrine-mappings') => 'Fourxxi\ApiUserBundle\Entity',
+            realpath(__DIR__.'/Resources/config/doctrine-mappings/token') => 'Fourxxi\ApiUserBundle\Entity',
         ];
 
-        $mappingPass = DoctrineOrmMappingsPass::createYamlMappingDriver(
+        $mappingPass = DoctrineOrmMappingsPass::createXmlMappingDriver(
             $mappings,
             [],
             'api_user.use_bundled_token'
+        );
+
+        $container->addCompilerPass($mappingPass);
+    }
+
+    private function registerDoctrineConfirmationTokenPass(ContainerBuilder $container): void
+    {
+        $mappings = [
+            realpath(__DIR__.'/Resources/config/doctrine-mappings/confirmation-token') => 'Fourxxi\ApiUserBundle\Entity',
+        ];
+
+        $mappingPass = DoctrineOrmMappingsPass::createXmlMappingDriver(
+            $mappings,
+            [],
+            'api_user.use_bundled_confirmation_token'
         );
 
         $container->addCompilerPass($mappingPass);

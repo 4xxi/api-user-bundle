@@ -24,6 +24,7 @@ final class ApiUserExtension extends Extension
         $this->loadTokenAuthConfiguration($config, $container);
         $this->loadLoginConfiguration($config, $container);
         $this->loadRegistrationConfiguration($config, $container);
+        $this->loadRegistrationConfirmationConfiguration($config, $container);
     }
 
     private function loadGeneralConfiguration(array $config, ContainerBuilder $container): void
@@ -56,7 +57,7 @@ final class ApiUserExtension extends Extension
         }
 
         if (null !== $config['token_auth']['token_provider']) {
-            $container->setAlias('api_user.provider.user', $config['token_auth']['token_provider']);
+            $container->setAlias('api_user.provider.token', $config['token_auth']['token_provider']);
         }
     }
 
@@ -68,11 +69,34 @@ final class ApiUserExtension extends Extension
 
     private function loadRegistrationConfiguration(array $config, ContainerBuilder $container): void
     {
+        if (!$config['registration']['enabled']) {
+            return;
+        }
+
         $loader = $container->getDefinition('api_user.router');
         $loader->setArgument(1, $config['registration']['route']);
 
         if (null !== $config['registration']['form_type']) {
             $container->setAlias('api_user.registration.form_type', $config['registration']['form_type']);
+        }
+    }
+
+    private function loadRegistrationConfirmationConfiguration(array $config, ContainerBuilder $container): void
+    {
+        if (!$config['registration']['confirmation']['enabled']) {
+            return;
+        }
+
+        if ($config['registration']['confirmation']['use_bundled']) {
+            $container->setParameter('api_user.use_bundled_confirmation_token', true);
+        }
+
+        if (null !== $config['registration']['confirmation']['credentials_generator']) {
+            $container->setAlias('api_user.confirmation_token_credentials_generator', $config['registration']['confirmation']['credentials_generator']);
+        }
+
+        if (null !== $config['registration']['confirmation']['token_provider']) {
+            $container->setAlias('api_user.provider.confirmation_token', $config['registration']['confirmation']['token_provider']);
         }
     }
 }

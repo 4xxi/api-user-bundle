@@ -18,16 +18,16 @@ final class ApiUserLoader extends Loader
     private $loaded;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $loginRoute;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $registrationRoute;
 
-    public function __construct(string $loginRoute, string $registrationRoute)
+    public function __construct(string $loginRoute = null, string $registrationRoute = null)
     {
         $this->loaded = false;
         $this->loginRoute = $loginRoute;
@@ -41,10 +41,16 @@ final class ApiUserLoader extends Loader
         }
 
         $routes = new RouteCollection();
-        $routes->add('api_user_login', new Route($this->loginRoute));
-        $routes->add('api_user_registration', new Route($this->registrationRoute, [
-            '_controller' => RegistrationController::class.'::register',
-        ], [], [], null, [], Request::METHOD_POST));
+
+        if (null !== $this->loginRoute) {
+            $routes->add('api_user_login', new Route($this->loginRoute));
+        }
+
+        if (null !== $this->registrationRoute) {
+            $routes->add('api_user_registration', new Route($this->registrationRoute, [
+                '_controller' => RegistrationController::class.'::register',
+            ], [], [], null, [], Request::METHOD_POST));
+        }
 
         return $routes;
     }
