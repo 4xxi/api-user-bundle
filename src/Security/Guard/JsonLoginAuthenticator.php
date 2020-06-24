@@ -8,6 +8,7 @@ use Fourxxi\ApiUserBundle\Event\Security\Guard\LoginAuthenticationFailedEvent;
 use Fourxxi\ApiUserBundle\Event\Security\Guard\LoginAuthenticationSuccessEvent;
 use Fourxxi\ApiUserBundle\Event\Security\Guard\LoginAuthenticationUnavailableEvent;
 use Fourxxi\ApiUserBundle\Provider\TokenProviderInterface;
+use Fourxxi\ApiUserBundle\Security\Exception\UserNotConfirmedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -79,7 +80,12 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        $response = new JsonResponse(['message' => 'Invalid username/password'], Response::HTTP_UNAUTHORIZED);
+        if ($exception instanceof UserNotConfirmedException) {
+            $response = new JsonResponse(['message' => 'User not confirmed'], Response::HTTP_UNAUTHORIZED);
+        } else {
+            $response = new JsonResponse(['message' => 'Invalid username/password'], Response::HTTP_UNAUTHORIZED);
+        }
+
         $event = new LoginAuthenticationFailedEvent($request, $exception, $response);
 
         $this->eventDispatcher->dispatch($event);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Event\Security\Guard;
 
-use Fourxxi\ApiUserBundle\Entity\TokenInterface;
+use Fourxxi\ApiUserBundle\Model\TokenInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\Event;

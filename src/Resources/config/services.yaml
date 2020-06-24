@@ -21,17 +21,8 @@ services:
             $tokenLifetime: '%api_user.token_lifetime%'
             $credentialsGenerator: '@api_user.token_credentials_generator'
 
-    api_user.provider.confirmation_token_repository:
-        class: Fourxxi\ApiUserBundle\Repository\ConfirmationTokenRepository
-        arguments:
-            $registry: '@doctrine'
-            $credentialsGenerator: '@api_user.confirmation_token_credentials_generator'
-
     api_user.provider.token:
         alias: 'api_user.provider.token_repository'
-
-    api_user.provider.confirmation_token:
-        alias: 'api_user.provider.confirmation_token_repository'
 
     api_user.token_authenticator:
         public: true
@@ -69,4 +60,13 @@ services:
             $passwordEncoder: '@security.password_encoder'
         tags: ['kernel.event_subscriber']
 
+    Fourxxi\ApiUserBundle\EventSubscriber\UserConfirmationSubscriber:
+        arguments:
+            $credentialsGenerator: '@api_user.confirmation_token_credentials_generator'
 
+    api_user.user_checker:
+        public: true
+        class: Fourxxi\ApiUserBundle\Security\UserChecker
+        arguments:
+            $confirmationEnabled: '%api_user.confirmation_enabled%'
+            $allowUnconfirmedLogin: '%api_user.allow_unconfirmed_login%'

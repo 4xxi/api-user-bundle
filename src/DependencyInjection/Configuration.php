@@ -99,7 +99,6 @@ final class Configuration implements ConfigurationInterface
                         ->arrayNode('confirmation')
                             ->children()
                                 ->booleanNode('enabled')->defaultFalse()->end()
-                                ->booleanNode('use_bundled')->defaultTrue()->end()
                                 ->scalarNode('credentials_generator')->defaultNull()->end()
                                 ->scalarNode('token_provider')->defaultNull()->end()
                             ->end()

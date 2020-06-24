@@ -4,19 +4,23 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Fourxxi\ApiUserBundle\Entity\ConfirmationToken"
-            table="api_user_confirmation_token"
-            repository-class="Fourxxi\ApiUserBundle\Repository\ConfirmationTokenRepository">
+    <entity name="Fourxxi\ApiUserBundle\Model\Token"
+            table="api_user_token"
+            repository-class="Fourxxi\ApiUserBundle\Repository\TokenRepository">
         <indexes>
-            <index name="credentials_index" columns="credentials"/>
+            <index name="credentials_index" columns="expires_at,credentials"/>
         </indexes>
 
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
 
+        <field name="expiresAt" type="datetime_immutable"/>
+        <field name="createdAt" type="datetime_immutable"/>
         <field name="credentials"/>
 
-        <one-to-one field="user" target-entity="Symfony\Component\Security\Core\User\UserInterface"/>
+        <many-to-one field="user" target-entity="Symfony\Component\Security\Core\User\UserInterface">
+            <join-column on-delete="CASCADE"/>
+        </many-to-one>
     </entity>
 </doctrine-mapping>

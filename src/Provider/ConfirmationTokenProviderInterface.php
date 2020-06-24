@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Provider;
 
-use Fourxxi\ApiUserBundle\Entity\ConfirmationTokenInterface;
+use Fourxxi\ApiUserBundle\Model\ConfirmationToken\ConfirmationTokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 interface ConfirmationTokenProviderInterface

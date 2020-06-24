@@ -65,6 +65,7 @@ final class ApiUserExtension extends Extension
     {
         $loader = $container->getDefinition('api_user.router');
         $loader->setArgument(0, $config['login']['route']);
+        $container->setParameter('api_user.allow_unconfirmed_login', $config['login']['allow_unconfirmed_login']);
     }
 
     private function loadRegistrationConfiguration(array $config, ContainerBuilder $container): void
@@ -83,20 +84,16 @@ final class ApiUserExtension extends Extension
 
     private function loadRegistrationConfirmationConfiguration(array $config, ContainerBuilder $container): void
     {
+        $container->setParameter('api_user.confirmation_enabled', $config['registration']['confirmation']['enabled']);
         if (!$config['registration']['confirmation']['enabled']) {
             return;
-        }
-
-        if ($config['registration']['confirmation']['use_bundled']) {
-            $container->setParameter('api_user.use_bundled_confirmation_token', true);
         }
 
         if (null !== $config['registration']['confirmation']['credentials_generator']) {
             $container->setAlias('api_user.confirmation_token_credentials_generator', $config['registration']['confirmation']['credentials_generator']);
         }
 
-        if (null !== $config['registration']['confirmation']['token_provider']) {
-            $container->setAlias('api_user.provider.confirmation_token', $config['registration']['confirmation']['token_provider']);
-        }
+        $definition = $container->getDefinition('Fourxxi\ApiUserBundle\EventSubscriber\UserConfirmationSubscriber');
+        $definition->addTag('kernel.event_subscriber');
     }
 }

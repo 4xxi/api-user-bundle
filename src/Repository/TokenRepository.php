@@ -6,8 +6,8 @@ namespace Fourxxi\ApiUserBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Fourxxi\ApiUserBundle\Entity\Token;
-use Fourxxi\ApiUserBundle\Entity\TokenInterface;
+use Fourxxi\ApiUserBundle\Model\Token;
+use Fourxxi\ApiUserBundle\Model\TokenInterface;
 use Fourxxi\ApiUserBundle\Provider\TokenProviderInterface;
 use Fourxxi\ApiUserBundle\Service\TokenCredentialsGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
