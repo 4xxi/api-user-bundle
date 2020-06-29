@@ -55,14 +55,26 @@ services:
             $eventDispatcher: '@event_dispatcher'
         tags: ['controller.service_arguments']
 
+    Fourxxi\ApiUserBundle\Controller\ConfirmationController:
+        arguments:
+            $userClass: '%api_user.user_class%'
+        tags: ['controller.service_arguments']
+
     Fourxxi\ApiUserBundle\EventSubscriber\EncodeUserPasswordSubscriber:
         arguments:
             $passwordEncoder: '@security.password_encoder'
         tags: ['kernel.event_subscriber']
 
+    Fourxxi\ApiUserBundle\Service\FrontendRouter:
+        arguments:
+            $baseUrl: '%api_user.frontend.base_url%'
+            $confirmationRoute: '%api_user.confirmation.frontend_route%'
+
     Fourxxi\ApiUserBundle\EventSubscriber\UserConfirmationSubscriber:
         arguments:
             $credentialsGenerator: '@api_user.confirmation_token_credentials_generator'
+            $messageSender: '@api_user.message_sender'
+            $router: '@Fourxxi\ApiUserBundle\Service\FrontendRouter'
 
     api_user.user_checker:
         public: true
@@ -70,3 +82,15 @@ services:
         arguments:
             $confirmationEnabled: '%api_user.confirmation_enabled%'
             $allowUnconfirmedLogin: '%api_user.allow_unconfirmed_login%'
+
+    api_user.message_sender:
+        alias: 'api_user.message_sender.plain_email'
+
+    api_user.message_sender.plain_email:
+        class: Fourxxi\ApiUserBundle\Sender\PlainMailerSender
+        arguments:
+            $from: '%api_user.message_sender.from%'
+            $mailer: '@mailer'
+            $translator: '@translator'
+            $logger: '@logger'
+

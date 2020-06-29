@@ -32,7 +32,7 @@ final class UserChecker implements UserCheckerInterface
     public function checkPreAuth(UserInterface $user)
     {
         if ($this->confirmationEnabled && !$this->allowUnconfirmedLogin) {
-            if (!is_subclass_of($user, ConfirmableUserInterface::class)) {
+            if (!$user instanceof ConfirmableUserInterface) {
                 return;
             }
 

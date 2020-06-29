@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Routing;
 
+use Fourxxi\ApiUserBundle\Controller\ConfirmationController;
 use Fourxxi\ApiUserBundle\Controller\RegistrationController;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,11 +28,20 @@ final class ApiUserLoader extends Loader
      */
     private $registrationRoute;
 
-    public function __construct(string $loginRoute = null, string $registrationRoute = null)
-    {
+    /**
+     * @var string|null
+     */
+    private $confirmationRoute;
+
+    public function __construct(
+        string $loginRoute = null,
+        string $registrationRoute = null,
+        string $confirmationRoute = null
+    ) {
         $this->loaded = false;
         $this->loginRoute = $loginRoute;
         $this->registrationRoute = $registrationRoute;
+        $this->confirmationRoute = $confirmationRoute;
     }
 
     public function load($resource, $type = null): RouteCollection
@@ -48,8 +58,17 @@ final class ApiUserLoader extends Loader
 
         if (null !== $this->registrationRoute) {
             $routes->add('api_user_registration', new Route($this->registrationRoute, [
-                '_controller' => RegistrationController::class.'::register',
+                '_controller' => RegistrationController::class,
             ], [], [], null, [], Request::METHOD_POST));
+        }
+
+        if (null !== $this->confirmationRoute) {
+            $routes->add('api_user_registration_confirmation', new Route($this->confirmationRoute, [
+                '_controller' => ConfirmationController::class,
+                'token' => null,
+            ], [
+                'token' => '.+',
+            ], [], null, [], Request::METHOD_POST));
         }
 
         return $routes;

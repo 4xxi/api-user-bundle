@@ -1,0 +1,4 @@
+messages:
+  confirmation:
+    subject: 'Account confirmation'
+    content: 'Welcome %username%! Confirm your account via link: %confirmationUrl%'

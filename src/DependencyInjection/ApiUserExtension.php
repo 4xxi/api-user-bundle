@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -25,6 +26,8 @@ final class ApiUserExtension extends Extension
         $this->loadLoginConfiguration($config, $container);
         $this->loadRegistrationConfiguration($config, $container);
         $this->loadRegistrationConfirmationConfiguration($config, $container);
+        $this->loadMessageSenderConfiguration($config, $container);
+        $this->loadFrontendConfiguration($config, $container);
     }
 
     private function loadGeneralConfiguration(array $config, ContainerBuilder $container): void
@@ -89,11 +92,44 @@ final class ApiUserExtension extends Extension
             return;
         }
 
+        if (empty($config['frontend']['base_url'])) {
+            throw new InvalidConfigurationException('Confirmation enabled, but frontend.base_url parameter not set');
+        }
+
+        if (empty($config['registration']['confirmation']['frontend_route'])) {
+            throw new InvalidConfigurationException('Confirmation enabled, but registration.confirmation.frontend_route parameter not set');
+        }
+
         if (null !== $config['registration']['confirmation']['credentials_generator']) {
             $container->setAlias('api_user.confirmation_token_credentials_generator', $config['registration']['confirmation']['credentials_generator']);
         }
 
+        $loader = $container->getDefinition('api_user.router');
+        $loader->setArgument(2, $config['registration']['confirmation']['route']);
+
         $definition = $container->getDefinition('Fourxxi\ApiUserBundle\EventSubscriber\UserConfirmationSubscriber');
         $definition->addTag('kernel.event_subscriber');
+
+        $container->setParameter('api_user.confirmation.frontend_route', $config['registration']['confirmation']['frontend_route']);
+    }
+
+    private function loadMessageSenderConfiguration(array $config, ContainerBuilder $container): void
+    {
+        $container->setParameter('api_user.message_sender.from', $config['message_sender']['from']);
+        $customService = $config['message_sender']['service'];
+        $confirmationEnabled = $config['registration']['confirmation']['enabled'];
+
+        if (null === $customService && $confirmationEnabled && empty($config['message_sender']['from']['email'])) {
+            throw new InvalidConfigurationException('Confirmation enabled but message_sender.from.email parameter not set');
+        }
+
+        if (null !== $customService) {
+            $container->setAlias('api_user.message_sender', $customService);
+        }
+    }
+
+    private function loadFrontendConfiguration(array $config, ContainerBuilder $container): void
+    {
+        $container->setParameter('api_user.frontend.base_url', rtrim($config['frontend']['base_url'], '/'));
     }
 }
