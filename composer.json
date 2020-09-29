@@ -1,0 +1,43 @@
+{
+  "name": "4xxi/api-user-bundle",
+  "description": "Fourxxi bundle for quick demos of the project",
+  "type": "symfony-bundle",
+  "require": {
+    "php": "^7.3",
+    "symfony/form": "^2.8 || ^3.0 || ^4.0",
+    "symfony/framework-bundle": "^4.0",
+    "symfony/security-bundle": "^4.0",
+    "symfony/translation": "^4.0",
+    "symfony/validator": "^4.0",
+    "doctrine/doctrine-bundle": "^1.3"
+  },
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Fourxxi\\ApiUserBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Fourxxi\\ApiUserBundle\\Tests\\": "tests/"
+    }
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Artem Vozhzhov",
+      "email": "avozhzhov@4xxi.com"
+    },
+    {
+      "name": "Dmitrii Bezmelnitsyn",
+      "email": "dbezmelnitsyn@4xxi.com"
+    },
+    {
+      "name": "Ruslan Karimov",
+      "email": "rk@4xxi.com"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
+}
