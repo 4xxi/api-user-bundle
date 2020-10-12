@@ -157,7 +157,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('frontend')
                     ->children()
-                        ->scalarNode('base_url')->defaultNull()->end()
+                        ->scalarNode('base_url')->defaultValue('localhost')->end()
                     ->end()
                 ->end()
             ->end()

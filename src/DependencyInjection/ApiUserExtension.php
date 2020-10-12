@@ -60,7 +60,10 @@ final class ApiUserExtension extends Extension
         }
 
         if (null !== $config['token_auth']['token_provider']) {
-            $container->setAlias('api_user.provider.token', $config['token_auth']['token_provider']);
+            $tokenProviderId = $config['token_auth']['token_provider'];
+            if ('api_user.provider.token' !== $tokenProviderId) {
+                $container->setAlias('api_user.provider.token', $tokenProviderId);
+            }
         }
     }
 
