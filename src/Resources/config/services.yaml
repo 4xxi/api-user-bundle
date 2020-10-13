@@ -75,6 +75,7 @@ services:
             $credentialsGenerator: '@api_user.confirmation_token_credentials_generator'
             $messageSender: '@api_user.message_sender'
             $router: '@Fourxxi\ApiUserBundle\Service\FrontendRouter'
+        tags: ['kernel.event_subscriber']
 
     api_user.user_checker:
         public: true

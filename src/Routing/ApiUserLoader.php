@@ -53,7 +53,8 @@ final class ApiUserLoader extends Loader
         $routes = new RouteCollection();
 
         if (null !== $this->loginRoute) {
-            $routes->add('api_user_login', new Route($this->loginRoute));
+            $loginRoute = new Route($this->loginRoute, [], [], [], null, [], Request::METHOD_POST);
+            $routes->add('api_user_login', $loginRoute);
         }
 
         if (null !== $this->registrationRoute) {

@@ -49,13 +49,7 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
 
     public function supports(Request $request)
     {
-        $validRequest = $request->isMethod(Request::METHOD_POST)
-            && 'application/json' === $request->headers->get('Content-Type')
-            && !empty($request->getContent());
-
-        $validJson = (bool) json_decode($request->getContent(), true);
-
-        return $validRequest && $validJson;
+        return $request->attributes->get('_route') === 'api_user_login';
     }
 
     public function getCredentials(Request $request)
@@ -63,8 +57,8 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
         $data = json_decode($request->getContent(), true);
 
         return [
-            'username' => isset($data['username']) ? $data['username'] : null,
-            'password' => isset($data['password']) ? $data['password'] : null,
+            'username' => $data['username'] ?? null,
+            'password' => $data['password'] ?? null,
         ];
     }
 
