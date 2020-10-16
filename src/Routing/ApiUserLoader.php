@@ -16,7 +16,7 @@ final class ApiUserLoader extends Loader
     /**
      * @var bool
      */
-    private $loaded;
+    private $isLoaded = false;
 
     /**
      * @var string|null
@@ -38,15 +38,14 @@ final class ApiUserLoader extends Loader
         string $registrationRoute = null,
         string $confirmationRoute = null
     ) {
-        $this->loaded = false;
         $this->loginRoute = $loginRoute;
         $this->registrationRoute = $registrationRoute;
         $this->confirmationRoute = $confirmationRoute;
     }
 
-    public function load($resource, $type = null): RouteCollection
+    public function load($resource, string $type = null): RouteCollection
     {
-        if ($this->loaded) {
+        if ($this->isLoaded) {
             throw new \RuntimeException('Do not add the "api_user" loader twice');
         }
 
@@ -72,10 +71,12 @@ final class ApiUserLoader extends Loader
             ], [], null, [], Request::METHOD_POST));
         }
 
+        $this->isLoaded = true;
+
         return $routes;
     }
 
-    public function supports($resource, $type = null): bool
+    public function supports($resource, string $type = null): bool
     {
         return 'api_user' === $type;
     }
