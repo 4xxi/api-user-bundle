@@ -9,7 +9,8 @@
     "symfony/security-bundle": "^4.0",
     "symfony/translation": "^4.0",
     "symfony/validator": "^4.0",
-    "doctrine/doctrine-bundle": "^2.1"
+    "doctrine/doctrine-bundle": "^2.1",
+    "ext-json": "*"
   },
   "minimum-stability": "stable",
   "autoload": {
@@ -38,6 +39,6 @@
     }
   ],
   "require-dev": {
-    "phpunit/phpunit": "*"
+    "phpunit/phpunit": "^9.3"
   }
 }
