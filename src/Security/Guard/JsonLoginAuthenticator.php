@@ -49,7 +49,7 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
 
     public function supports(Request $request)
     {
-        return $request->attributes->get('_route') === 'api_user_login';
+        return 'api_user_login' === $request->attributes->get('_route');
     }
 
     public function getCredentials(Request $request)

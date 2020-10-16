@@ -32,7 +32,9 @@ final class Configuration implements ConfigurationInterface
                 ->scalarNode('user_class')
                     ->cannotBeEmpty()
                     ->validate()
-                        ->ifTrue(function ($class) { return !class_exists($class); })
+                        ->ifTrue(function ($class) {
+                            return !class_exists($class);
+                        })
                         ->thenInvalid('Provided user class "%s" does not exist.')
                     ->end()
                 ->end()
@@ -104,14 +106,18 @@ final class Configuration implements ConfigurationInterface
                                 ->scalarNode('frontend_route')
                                     ->defaultNull()
                                     ->validate()
-                                        ->ifTrue(function ($v) { return null !== $v && false === strpos($v, '{token}'); })
+                                        ->ifTrue(function ($v) {
+                                            return null !== $v && false === strpos($v, '{token}');
+                                        })
                                         ->thenInvalid('{token} must be present in route')
                                     ->end()
                                 ->end()
                                 ->scalarNode('route')
                                     ->defaultValue('/api/confirmation/{token}')
                                     ->validate()
-                                        ->ifTrue(function ($v) { return false === strpos($v, '{token}'); })
+                                        ->ifTrue(function ($v) {
+                                            return false === strpos($v, '{token}');
+                                        })
                                         ->thenInvalid('{token} must be present in route')
                                     ->end()
                                     ->cannotBeEmpty()
