@@ -28,13 +28,6 @@ encoders:
 3.2 Add firewalls
 ```yaml
 firewalls:
-    login:
-        stateless: true
-        pattern: ^/api/login
-        user_checker: api_user.user_checker
-        guard:
-            authenticators:
-                - 'api_user.json_login_authenticator'
     public:
         pattern: ^/api/(register|confirmation)
         security: false
@@ -42,9 +35,12 @@ firewalls:
     api:
         stateless: true
         pattern: ^/api
+        user_checker: api_user.user_checker
         guard:
             authenticators:
                 - 'api_user.token_authenticator'
+                - 'api_user.json_login_authenticator'
+            entry_point: 'api_user.json_login_authenticator'
 ```
 
 3.3 Modify access control
