@@ -43,7 +43,7 @@ final class ApiUserLoader extends Loader
         $this->confirmationRoute = $confirmationRoute;
     }
 
-    public function load($resource, string $type = null): RouteCollection
+    public function load($resource, $type = null): RouteCollection
     {
         if ($this->isLoaded) {
             throw new \RuntimeException('Do not add the "api_user" loader twice');
@@ -76,7 +76,7 @@ final class ApiUserLoader extends Loader
         return $routes;
     }
 
-    public function supports($resource, string $type = null): bool
+    public function supports($resource, $type = null): bool
     {
         return 'api_user' === $type;
     }
