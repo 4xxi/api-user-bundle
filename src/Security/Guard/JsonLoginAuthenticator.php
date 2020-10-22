@@ -109,7 +109,7 @@ final class JsonLoginAuthenticator extends AbstractGuardAuthenticator
         return false;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): ?Response
     {
         $response = new JsonResponse(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
         $event = new LoginAuthenticationUnavailableEvent($request, $authException, $response);
