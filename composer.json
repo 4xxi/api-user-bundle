@@ -42,5 +42,10 @@
     "phpunit/phpunit": "^9.3",
     "sensiolabs/security-checker": "^6.0",
     "friendsofphp/php-cs-fixer": "^2.16"
+  },
+  "scripts": {
+    "test": [
+      "vendor/bin/phpunit tests"
+    ]
   }
 }
