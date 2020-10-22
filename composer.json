@@ -46,6 +46,13 @@
     "weirdan/doctrine-psalm-plugin": "^0.11.3"
   },
   "scripts": {
+    "check-code-quality": [
+      "vendor/bin/php-cs-fixer fix src --rules=@Symfony --dry-run",
+      "vendor/bin/psalm"
+    ],
+    "check-dependencies": [
+      "vendor/bin/security-checker security:check"
+    ],
     "test": [
       "vendor/bin/phpunit tests"
     ]
