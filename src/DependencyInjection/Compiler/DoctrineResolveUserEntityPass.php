@@ -10,6 +10,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class DoctrineResolveUserEntityPass implements CompilerPassInterface
 {
+    /**
+     * @return void
+     */
     public function process(ContainerBuilder $container)
     {
         $definition = $container->findDefinition('doctrine.orm.listeners.resolve_target_entity');

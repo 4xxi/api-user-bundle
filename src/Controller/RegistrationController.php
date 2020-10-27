@@ -44,10 +44,7 @@ final class RegistrationController extends AbstractController
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @return JsonResponse|Response
-     */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): ?Response
     {
         $form = $this->createForm(get_class($this->registrationFormType), null, ['data_class' => $this->userClass]);
         $form->submit($this->getJsonPayloadFromRequest($request));

@@ -43,7 +43,6 @@ final class JsonLoginAuthenticatorTest extends TestCase
         );
     }
 
-
     public function authRequestsDataProvider(): array
     {
         return [
@@ -72,17 +71,12 @@ final class JsonLoginAuthenticatorTest extends TestCase
     /**
      * @test
      * @dataProvider authRequestsDataProvider
-     *
-     * @param string $requestContent
-     * @param string|null $expectedUsername
-     * @param string|null $expectedPassword
      */
     public function parsesRequestToGetCredentials(
         string $requestContent,
         ?string $expectedUsername,
         ?string $expectedPassword
-    ): void
-    {
+    ): void {
         $request = new Request([], [], [], [], [], [], $requestContent);
 
         $credentials = $this->jsonLoginAuthenticator->getCredentials($request);
@@ -147,8 +141,6 @@ final class JsonLoginAuthenticatorTest extends TestCase
     /**
      * @dataProvider authenticationFailures
      * @test
-     * @param AuthenticationException $exception
-     * @param string $expectedEvent
      */
     public function hasCustomEventsForAuthenticationFailures(AuthenticationException $exception, string $expectedEvent): void
     {

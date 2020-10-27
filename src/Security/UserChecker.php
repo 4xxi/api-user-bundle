@@ -29,6 +29,9 @@ final class UserChecker implements UserCheckerInterface
         $this->allowUnconfirmedLogin = $allowUnconfirmedLogin;
     }
 
+    /**
+     * @return void
+     */
     public function checkPreAuth(UserInterface $user)
     {
         if ($this->confirmationEnabled && !$this->allowUnconfirmedLogin) {
@@ -45,6 +48,9 @@ final class UserChecker implements UserCheckerInterface
         }
     }
 
+    /**
+     * @return void
+     */
     public function checkPostAuth(UserInterface $user)
     {
     }
