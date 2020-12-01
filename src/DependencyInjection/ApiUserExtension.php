@@ -93,6 +93,7 @@ final class ApiUserExtension extends Extension
 
     private function loadRegistrationConfirmationConfiguration(array $config, ContainerBuilder $container): void
     {
+        $container->setParameter('api_user.confirmation.frontend_route', '');
         $container->setParameter('api_user.confirmation_enabled', $config['registration']['confirmation']['enabled']);
         if (!$config['registration']['confirmation']['enabled']) {
             return;
