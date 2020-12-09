@@ -30,12 +30,16 @@ final class RegistrationControllerTest extends TestCase
     /** @var RegistrationController */
     private $registrationController;
 
+    /** @var FormInterface|MockObject */
+    private $registrationForm;
+
     protected function setUp(): void
     {
         $this->registrationFormType = $this->createMock(AbstractType::class);
         $this->formFactory = $this->createMock(FormFactoryInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->setupForm();
 
         $this->registrationController = new RegistrationController(
             $this->registrationFormType,
@@ -51,8 +55,7 @@ final class RegistrationControllerTest extends TestCase
      */
     public function expectsJsonBody(): void
     {
-        $form = $this->getForm();
-        $form->expects($this->atLeastOnce())
+        $this->registrationForm->expects($this->atLeastOnce())
             ->method('submit')
             ->with($this->equalTo(['expected' => 'test']));
 
@@ -65,9 +68,7 @@ final class RegistrationControllerTest extends TestCase
      */
     public function getsFailedResponseFromEventDispatcher(): void
     {
-        $form = $this->getForm();
-        $form->method('isValid')
-            ->willReturn(false);
+        $this->validationFails();
 
         $expectedResponse = new Response('test');
 
@@ -86,9 +87,7 @@ final class RegistrationControllerTest extends TestCase
      */
     public function doesNotPersistUserIfValidationIsFailed(): void
     {
-        $form = $this->getForm();
-        $form->method('isValid')
-            ->willReturn(false);
+        $this->validationFails();
 
         $this->entityManager->expects($this->never())->method('persist');
         $this->entityManager->expects($this->never())->method('flush');
@@ -102,11 +101,7 @@ final class RegistrationControllerTest extends TestCase
     public function persistsTheNewUser(): void
     {
         $expectedUser = new User('test', 'test');
-
-        $form = $this->getForm();
-        $form->method('isValid')
-            ->willReturn(true);
-        $form->method('getData')->willReturn($expectedUser);
+        $this->validationPassesWith($expectedUser);
 
         $this->entityManager->expects($this->atLeastOnce())->method('persist')->with($expectedUser);
         $this->entityManager->expects($this->atLeastOnce())->method('flush');
@@ -120,15 +115,23 @@ final class RegistrationControllerTest extends TestCase
         return new Request([], [], [], [], [], [], '{"expected": "test"}');
     }
 
-    /**
-     * @return MockObject|FormInterface
-     */
-    private function getForm()
+    private function setupForm(): void
     {
-        $form = $this->createMock(FormInterface::class);
-        $form->method('getErrors')->willReturn([]);
-        $this->formFactory->method('create')->willReturn($form);
+        $this->registrationForm = $this->createMock(FormInterface::class);
+        $this->registrationForm->method('getErrors')->willReturn([]);
+        $this->formFactory->method('create')->willReturn($this->registrationForm);
+    }
 
-        return $form;
+    private function validationFails(): void
+    {
+        $this->registrationForm->method('isValid')
+            ->willReturn(false);
+    }
+
+    private function validationPassesWith(User $expectedUser): void
+    {
+        $this->registrationForm->method('isValid')
+            ->willReturn(true);
+        $this->registrationForm->method('getData')->willReturn($expectedUser);
     }
 }
