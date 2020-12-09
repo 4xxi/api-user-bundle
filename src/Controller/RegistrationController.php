@@ -54,6 +54,7 @@ final class RegistrationController
         $this->userClass = $userClass;
         $this->formFactory = $formFactory;
         $this->eventDispatcher = $eventDispatcher;
+        $this->entityManager = $entityManager;
     }
 
     public function __invoke(Request $request): ?Response
