@@ -54,7 +54,10 @@
       "vendor/bin/security-checker security:check"
     ],
     "test": [
-      "vendor/bin/phpunit tests"
+      "vendor/bin/phpunit tests --coverage-text --coverage-filter=src"
+    ],
+    "coverage": [
+      "phpdbg -qrr ./vendor/bin/phpunit tests --coverage-text --coverage-filter=src"
     ]
   }
 }
