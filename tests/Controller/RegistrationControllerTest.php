@@ -60,7 +60,7 @@ final class RegistrationControllerTest extends TestCase
 
         $this->registrationController->__invoke($this->getRequest());
     }
-    
+
     /**
      * @test
      */
@@ -69,7 +69,7 @@ final class RegistrationControllerTest extends TestCase
         $form = $this->getForm();
         $form->method('isValid')
             ->willReturn(false);
-        
+
         $expectedResponse = new Response('test');
 
         $this->eventDispatcher->method('dispatch')
@@ -78,7 +78,7 @@ final class RegistrationControllerTest extends TestCase
             });
 
         $actualResponse = $this->registrationController->__invoke($this->getRequest());
-        
+
         $this->assertSame($expectedResponse, $actualResponse);
     }
 
@@ -114,7 +114,7 @@ final class RegistrationControllerTest extends TestCase
 
         $this->registrationController->__invoke($this->getRequest());
 
-   }
+    }
 
     private function getRequest(): Request
     {
