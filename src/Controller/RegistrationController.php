@@ -11,6 +11,7 @@ use Fourxxi\ApiUserBundle\Event\Controller\RegistrationUserCompletedEvent;
 use Fourxxi\ApiUserBundle\Event\Controller\RegistrationUserPrePersistEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -98,8 +99,9 @@ final class RegistrationController
 
     private function getJsonPayloadFromRequest(Request $request): array
     {
+        /** @var string $content */
         $content = $request->getContent();
-        if (null === $content || empty($content)) {
+        if (!$content) {
             return [];
         }
 
@@ -114,8 +116,15 @@ final class RegistrationController
     private function getErrors(FormInterface $form): array
     {
         $data = [];
+        /** @var FormError $error */
         foreach ($form->getErrors(true) as $error) {
-            $data[$error->getOrigin()->getName()][] = $error->getMessage();
+            $origin = $error->getOrigin();
+            if (null === $origin) {
+                $data['form'][] = $error->getMessage();
+            } else {
+                /* @var FormInterface $origin */
+                $data[$origin->getName()][] = $error->getMessage();
+            }
         }
 
         return $data;

@@ -34,7 +34,6 @@ final class RegistrationControllerTest extends TestCase
     {
         $this->registrationFormType = $this->createMock(AbstractType::class);
         $this->formFactory = $this->createMock(FormFactoryInterface::class);
-        $this->registrationController = $this->createMock(AbstractType::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
