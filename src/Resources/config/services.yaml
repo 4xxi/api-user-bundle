@@ -53,7 +53,7 @@ services:
             $registrationFormType: '@api_user.registration.form_type'
             $userClass: '%api_user.user_class%'
             $formFactory: '@form.factory'
-            $entityManager: '@doctrine.orm.entity_manager.abstract'
+            $entityManager: '@Doctrine\ORM\EntityManagerInterface'
             $eventDispatcher: '@event_dispatcher'
         tags: ['controller.service_arguments']
 
