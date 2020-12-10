@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Fourxxi\ApiUserBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Fourxxi\ApiUserBundle\Event\Controller\RegistrationFormValidationFailedEvent;
 use Fourxxi\ApiUserBundle\Event\Controller\RegistrationResponseCompletedEvent;
 use Fourxxi\ApiUserBundle\Event\Controller\RegistrationUserCompletedEvent;
 use Fourxxi\ApiUserBundle\Event\Controller\RegistrationUserPrePersistEvent;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final class RegistrationController extends AbstractController
+final class RegistrationController
 {
     /**
      * @var AbstractType
@@ -30,23 +32,39 @@ final class RegistrationController extends AbstractController
     private $userClass;
 
     /**
+     * @var FormFactoryInterface
+     */
+    private $formFactory;
+
+    /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
     public function __construct(
         AbstractType $registrationFormType,
         string $userClass,
-        EventDispatcherInterface $eventDispatcher
+        FormFactoryInterface $formFactory,
+        EventDispatcherInterface $eventDispatcher,
+        EntityManagerInterface $entityManager
     ) {
         $this->registrationFormType = $registrationFormType;
         $this->userClass = $userClass;
+        $this->formFactory = $formFactory;
         $this->eventDispatcher = $eventDispatcher;
+        $this->entityManager = $entityManager;
     }
 
     public function __invoke(Request $request): ?Response
     {
-        $form = $this->createForm(get_class($this->registrationFormType), null, ['data_class' => $this->userClass]);
+        $form = $this->formFactory->create(
+            get_class($this->registrationFormType),
+            null,
+            ['data_class' => $this->userClass]
+        );
         $form->submit($this->getJsonPayloadFromRequest($request));
 
         if (!$form->isValid()) {
@@ -59,13 +77,12 @@ final class RegistrationController extends AbstractController
 
         /** @var UserInterface $user */
         $user = $form->getData();
-        $em = $this->getDoctrine()->getManager();
 
         $prePersistEvent = new RegistrationUserPrePersistEvent($user);
         $this->eventDispatcher->dispatch($prePersistEvent);
 
-        $em->persist($user);
-        $em->flush();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         $completedEvent = new RegistrationUserCompletedEvent($user);
         $this->eventDispatcher->dispatch($completedEvent);
@@ -82,8 +99,9 @@ final class RegistrationController extends AbstractController
 
     private function getJsonPayloadFromRequest(Request $request): array
     {
+        /** @var string $content */
         $content = $request->getContent();
-        if (null === $content || empty($content)) {
+        if (!$content) {
             return [];
         }
 
@@ -98,8 +116,15 @@ final class RegistrationController extends AbstractController
     private function getErrors(FormInterface $form): array
     {
         $data = [];
+        /** @var FormError $error */
         foreach ($form->getErrors(true) as $error) {
-            $data[$error->getOrigin()->getName()][] = $error->getMessage();
+            $origin = $error->getOrigin();
+            if (null === $origin) {
+                $data['form'][] = $error->getMessage();
+            } else {
+                /* @var FormInterface $origin */
+                $data[$origin->getName()][] = $error->getMessage();
+            }
         }
 
         return $data;
