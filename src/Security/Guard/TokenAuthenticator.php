@@ -26,11 +26,6 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     private $tokenName;
 
     /**
-     * @var bool
-     */
-    private $checkQueryString;
-
-    /**
      * @var CredentialsProviderInterface
      */
     private $credentialsProvider;
@@ -47,13 +42,12 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function __construct(
         string $tokenName,
-        bool $checkQueryString,
         CredentialsProviderInterface $credentialsProvider,
         TokenProviderInterface $tokenProvider,
         EventDispatcherInterface $eventDispatcher
-    ) {
+    )
+    {
         $this->tokenName = $tokenName;
-        $this->checkQueryString = $checkQueryString;
         $this->credentialsProvider = $credentialsProvider;
         $this->tokenProvider = $tokenProvider;
         $this->eventDispatcher = $eventDispatcher;
@@ -116,7 +110,6 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         $response = new JsonResponse(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
         $event = new TokenAuthenticationUnavailableEvent($request, $authException, $response);
-
         $this->eventDispatcher->dispatch($event);
 
         return $event->getResponse();
@@ -126,8 +119,6 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         if ($request->headers->has($this->tokenName)) {
             return trim($request->headers->get($this->tokenName));
-        } elseif ($this->checkQueryString && $request->query->has($this->tokenName)) {
-            return trim($request->query->get($this->tokenName));
         }
 
         return null;
