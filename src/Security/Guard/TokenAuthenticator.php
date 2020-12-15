@@ -45,8 +45,7 @@ final class TokenAuthenticator extends AbstractGuardAuthenticator
         CredentialsProviderInterface $credentialsProvider,
         TokenProviderInterface $tokenProvider,
         EventDispatcherInterface $eventDispatcher
-    )
-    {
+    ) {
         $this->tokenName = $tokenName;
         $this->credentialsProvider = $credentialsProvider;
         $this->tokenProvider = $tokenProvider;

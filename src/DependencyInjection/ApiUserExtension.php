@@ -53,10 +53,8 @@ final class ApiUserExtension extends Extension
     private function loadTokenAuthConfiguration(array $config, ContainerBuilder $container): void
     {
         $guard = $container->getDefinition('api_user.token_authenticator');
+        $guard->setArgument('$tokenName', $config['token_auth']['header']);
 
-        $guard->setArgument(0, $config['token_auth']['header']);
-
-        // TODO: validate service interfaces
         if (null !== $config['token_auth']['credentials_provider']) {
             $container->setAlias('api_user.provider.credentials', $config['token_auth']['credentials_provider']);
         }
