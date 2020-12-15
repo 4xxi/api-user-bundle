@@ -55,7 +55,6 @@ final class ApiUserExtension extends Extension
         $guard = $container->getDefinition('api_user.token_authenticator');
 
         $guard->setArgument(0, $config['token_auth']['header']);
-        $guard->setArgument(1, $config['token_auth']['check_query_string']);
 
         // TODO: validate service interfaces
         if (null !== $config['token_auth']['credentials_provider']) {
